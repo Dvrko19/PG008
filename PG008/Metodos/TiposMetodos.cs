@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Web;
 using PG008.Metodos;
 using PG008.Models;
@@ -42,8 +44,91 @@ namespace PG008.Metodos
 
                 while (dr.Read()) 
                 {
-                    
+                    oListaTipos.Add(new Tipos()
+                    {
+                        IdTipos = Convert.ToInt32(dr["IDTipo"].ToString()),
+                        Descripcion = dr["Descripcion"].ToString(),
+                        Activo = Convert.ToBoolean(dr["Activo"].ToString())
+
+                    });
+                    dr.Close();
                 }
+                return oListaTipos;
+            }
+        }
+        public bool Registrar(Tipos tipos)
+        {
+            bool respuesta = true;
+            using (SqlConnection Ocnn = new SqlConnection(Conexion.Bd))
+            {
+                try{
+                    Ocnn.Open();
+                    SqlCommand cmd = new SqlCommand("Sp_InsertarTipos", Ocnn);
+                    cmd.Parameters.AddWithValue("Descripcion", tipos.Descripcion);
+                    cmd.Parameters.Add("Resultado",SqlDbType.Bit).Direction = ParameterDirection.Output;
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+                    cmd.ExecuteNonQuery();
+                    respuesta = Convert.ToBoolean(cmd.Parameters["Resultado"].Value);
+                }
+                catch(Exception ex){
+                    respuesta = false;
+                }
+                return respuesta;
+            }
+        }
+        public bool Modificar(Tipos tipos) 
+        {
+            bool respuesta = true;
+            using (SqlConnection Ocnn = new SqlConnection(Conexion.Bd))
+            {
+                try
+                {
+                    Ocnn.Open();
+                    SqlCommand cmd = new SqlCommand("Sp_ModificarMarcas", Ocnn);
+                    cmd.Parameters.AddWithValue("IDTipo", tipos.IdTipos);
+                    cmd.Parameters.AddWithValue("Descripcion", tipos.Descripcion);
+                    cmd.Parameters.AddWithValue("Activo", tipos.Activo);
+                    cmd.Parameters.Add("Resultado", SqlDbType.Bit).Direction = ParameterDirection.Output;
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+                    cmd.ExecuteNonQuery();
+                    respuesta = Convert.ToBoolean(cmd.Parameters["Resultado"].Value);
+                }
+                catch (Exception ex)
+                {
+                    respuesta = false;
+                }
+                return respuesta;
+            }
+
+        }
+        public bool Eliminar (int Id)
+        {
+            bool Respuesta = true;
+
+            using (SqlConnection Ocnn = new SqlConnection(Conexion.Bd))
+            {
+                try
+                {
+                    Ocnn.Open();
+                    string sBorrar = "UPDATE TIPOS SET ACTIVO = 'False' FROM TIPOS WHERE IDMarca = @A1";
+
+                    SqlCommand cmd = new SqlCommand(sBorrar, Ocnn);
+                    cmd.Parameters.AddWithValue("@A1", Id);
+                    cmd.CommandType = CommandType.Text;
+                    cmd.ExecuteNonQuery();
+
+                    cmd.ExecuteNonQuery();
+
+                    Respuesta = Convert.ToBoolean(cmd.Parameters["Resultado"].Value);
+
+                }
+                catch (Exception ex)
+                {
+                    Respuesta = false;
+                }
+                return Respuesta;
             }
         }
     }

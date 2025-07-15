@@ -4,37 +4,34 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
-using PG008.Metodos;
 using PG008.Models;
 
 namespace PG008.Metodos
 {
-    public class MarcasMetodos
+    public class CategoriaMetodos
     {
-        private static MarcasMetodos _instance = null;
-
-        public MarcasMetodos()
+        private static CategoriaMetodos _instance = null;
+        public CategoriaMetodos()
         {
         }
-
-        public static MarcasMetodos Instancia
+        public static CategoriaMetodos Instancia
         {
             get
             {
                 if (_instance == null)
                 {
-                    _instance = new MarcasMetodos();
+                    _instance = new CategoriaMetodos();
                 }
                 return _instance;
             }
         }
-        public List<Marcas> Listar()
+        public List<Categoria> Listar()
         {
-            List<Marcas> oListaMarcas = new List<Marcas>();
+            List<Categoria> oListaTipos = new List<Categoria>();
 
             using (SqlConnection Ocnn = new SqlConnection(Conexion.Bd))
             {
-                SqlCommand cmd = new SqlCommand("sp_consultaMarcas", Ocnn);
+                SqlCommand cmd = new SqlCommand("sp_CnsultaCategoria", Ocnn);
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
                 Ocnn.Open();
@@ -43,21 +40,20 @@ namespace PG008.Metodos
 
                 while (dr.Read())
                 {
-                    oListaMarcas.Add(new Marcas()
+                    oListaTipos.Add(new Categoria()
                     {
-                        IDMarca = Convert.ToInt32(dr["IdMarca"].ToString()),
+                        idCategoria = Convert.ToInt32(dr["IDTipo"].ToString()),
                         Descripcion = dr["Descripcion"].ToString(),
-                        Imagen = (byte[])dr["Imagen"],
                         Estatus = Convert.ToBoolean(dr["Estatus"].ToString()),
                         ImagenBase64 = Convert.ToBase64String((byte[])dr["Imagen"])
 
                     });
                     dr.Close();
                 }
-                return oListaMarcas;
+                return oListaTipos;
             }
         }
-        public bool Registrar(Marcas Marcas)
+        public bool Registrar(Categoria categoria)
         {
             bool respuesta = true;
             using (SqlConnection Ocnn = new SqlConnection(Conexion.Bd))
@@ -65,13 +61,16 @@ namespace PG008.Metodos
                 try
                 {
                     Ocnn.Open();
-                    SqlCommand cmd = new SqlCommand("Sp_InsertarMarcas", Ocnn);
-                    cmd.Parameters.AddWithValue("Descripcion", Marcas.Descripcion);
+                    SqlCommand cmd = new SqlCommand("sp_InsertarCategoria", Ocnn);
+                    cmd.Parameters.AddWithValue("Descripcion", categoria.Descripcion);
                     cmd.Parameters.Add("Resultado", SqlDbType.Bit).Direction = ParameterDirection.Output;
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
-                    if(!string.IsNullOrEmpty(Marcas.ImagenBase64))
+                    cmd.ExecuteNonQuery();
+                    respuesta = Convert.ToBoolean(cmd.Parameters["Resultado"].Value);
+                    if (!string.IsNullOrEmpty(categoria.ImagenBase64))
                     {
-                        byte[] imageBytes = Convert.FromBase64String(Marcas.ImagenBase64);
+                        byte[] imageBytes = Convert.FromBase64String(categoria.ImagenBase64);
                         cmd.Parameters.AddWithValue("Imagen", imageBytes);
 
                     }
@@ -86,8 +85,9 @@ namespace PG008.Metodos
                 }
                 return respuesta;
             }
+
         }
-        public bool Modificar(Marcas Marcas)
+        public bool Modificar(Categoria categoria)
         {
             bool respuesta = true;
             using (SqlConnection Ocnn = new SqlConnection(Conexion.Bd))
@@ -95,10 +95,10 @@ namespace PG008.Metodos
                 try
                 {
                     Ocnn.Open();
-                    SqlCommand cmd = new SqlCommand("Sp_ModificarMarcas", Ocnn);
-                    cmd.Parameters.AddWithValue("IdMarca", Marcas.IDMarca);
-                    cmd.Parameters.AddWithValue("Descripcion", Marcas.Descripcion);
-                    cmd.Parameters.AddWithValue("Estatus", Marcas.Estatus);
+                    SqlCommand cmd = new SqlCommand("sp_ModificaCategorias", Ocnn);
+                    cmd.Parameters.AddWithValue("IDTipo", categoria.idCategoria);
+                    cmd.Parameters.AddWithValue("Descripcion", categoria.Descripcion);
+                    cmd.Parameters.AddWithValue("Estatus", categoria.Estatus);
                     cmd.Parameters.Add("Resultado", SqlDbType.Bit).Direction = ParameterDirection.Output;
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
@@ -111,6 +111,7 @@ namespace PG008.Metodos
                 }
                 return respuesta;
             }
+
         }
         public bool Eliminar(int Id)
         {
@@ -121,7 +122,7 @@ namespace PG008.Metodos
                 try
                 {
                     Ocnn.Open();
-                    string sBorrar = "UPDATE MARCAS SET ESTATUS = 'False' FROM MARCAS WHERE IDTipo = @A1";
+                    string sBorrar = "UPDATE TIPOS SET ESTATUS = 'False' FROM TIPOS WHERE IDMarca = @A1";
 
                     SqlCommand cmd = new SqlCommand(sBorrar, Ocnn);
                     cmd.Parameters.AddWithValue("@A1", Id);

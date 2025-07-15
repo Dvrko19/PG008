@@ -48,7 +48,8 @@ namespace PG008.Metodos
                     {
                         IdTipos = Convert.ToInt32(dr["IDTipo"].ToString()),
                         Descripcion = dr["Descripcion"].ToString(),
-                        Activo = Convert.ToBoolean(dr["Activo"].ToString())
+                        Estatus = Convert.ToBoolean(dr["Estatus"].ToString()),
+                        ImagenBase64 = Convert.ToBase64String((byte[])dr["Imagen"])
 
                     });
                     dr.Close();
@@ -63,13 +64,23 @@ namespace PG008.Metodos
             {
                 try{
                     Ocnn.Open();
-                    SqlCommand cmd = new SqlCommand("Sp_InsertarTipos", Ocnn);
+                    SqlCommand cmd = new SqlCommand("sp_InsertaTipoVehiculo", Ocnn);
                     cmd.Parameters.AddWithValue("Descripcion", tipos.Descripcion);
                     cmd.Parameters.Add("Resultado",SqlDbType.Bit).Direction = ParameterDirection.Output;
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
                     cmd.ExecuteNonQuery();
                     respuesta = Convert.ToBoolean(cmd.Parameters["Resultado"].Value);
+                    if (!string.IsNullOrEmpty(tipos.ImagenBase64))
+                    {
+                        byte[] imageBytes = Convert.FromBase64String(tipos.ImagenBase64);
+                        cmd.Parameters.AddWithValue("Imagen", imageBytes);
+
+                    }
+                    else
+                    {
+                        cmd.Parameters.AddWithValue("Imagen", DBNull.Value);
+                    }
                 }
                 catch(Exception ex){
                     respuesta = false;
@@ -85,10 +96,10 @@ namespace PG008.Metodos
                 try
                 {
                     Ocnn.Open();
-                    SqlCommand cmd = new SqlCommand("Sp_ModificarMarcas", Ocnn);
+                    SqlCommand cmd = new SqlCommand("sp_ModificaTipoVehiculo", Ocnn);
                     cmd.Parameters.AddWithValue("IDTipo", tipos.IdTipos);
                     cmd.Parameters.AddWithValue("Descripcion", tipos.Descripcion);
-                    cmd.Parameters.AddWithValue("Activo", tipos.Activo);
+                    cmd.Parameters.AddWithValue("Estatus", tipos.Estatus);
                     cmd.Parameters.Add("Resultado", SqlDbType.Bit).Direction = ParameterDirection.Output;
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
@@ -112,7 +123,7 @@ namespace PG008.Metodos
                 try
                 {
                     Ocnn.Open();
-                    string sBorrar = "UPDATE TIPOS SET ACTIVO = 'False' FROM TIPOS WHERE IDMarca = @A1";
+                    string sBorrar = "UPDATE TIPOS SET ESTATUS = 'False' FROM TIPOS WHERE IDMarca = @A1";
 
                     SqlCommand cmd = new SqlCommand(sBorrar, Ocnn);
                     cmd.Parameters.AddWithValue("@A1", Id);

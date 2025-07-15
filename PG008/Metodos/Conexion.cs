@@ -8,6 +8,6 @@ namespace PG008.Metodos
 {
     public class Conexion
     {
-        public static string Bd = ConfigurationManager.ConnectionStrings["cnnDbString"].ConnectionString;
+        public static string Bd = ConfigurationManager.ConnectionStrings["DBMVCEntities"].ConnectionString;
     }
 }

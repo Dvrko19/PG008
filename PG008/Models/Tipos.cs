@@ -9,8 +9,11 @@ namespace PG008.Models
     {
         public int IdTipos { get; set; }
         public string Descripcion { get; set; }
+        
+        public bool Estatus {  get; set; }
         public byte[] Imagen { get; set; }
 
-        public bool Activo {  get; set; }
+
+        public string ImagenBase64 { get; set; }
     }
 }

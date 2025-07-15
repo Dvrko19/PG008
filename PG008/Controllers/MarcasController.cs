@@ -13,8 +13,8 @@ namespace PG008.Controllers
         // GET: Marcas
         public ActionResult Marcas()
         {
-            if (Session["Usuario"] == null)
-                return RedirectToAction("Login", "Acceder");
+            //if (Session["Usuario"] == null)
+                //return RedirectToAction("Login", "Acceder");
 
             return View();
            
@@ -38,6 +38,18 @@ namespace PG008.Controllers
             repuesta = (oCat.IDMarca == 0) ? MarcasMetodos.Instancia.Registrar(oCat) : MarcasMetodos.Instancia.Modificar(oCat);
 
             return Json(new {resultado = repuesta}, JsonRequestBehavior.AllowGet);
+        }
+        [HttpPost]
+        public JsonResult ModificarMarcas(Marcas oCat)
+        {
+            bool respuesta = false;
+
+            if (oCat.IDMarca > 0)
+            {
+                respuesta = MarcasMetodos.Instancia.Modificar(oCat);
+            }
+
+            return Json(new { resultado = respuesta }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]

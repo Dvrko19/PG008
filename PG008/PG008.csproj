@@ -120,15 +120,18 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\CategoriaController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MarcasController.cs" />
     <Compile Include="Controllers\TiposController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Metodos\CategoriaMetodos.cs" />
     <Compile Include="Metodos\Conexion.cs" />
     <Compile Include="Metodos\MarcasMetodos.cs" />
     <Compile Include="Metodos\TiposMetodos.cs" />
+    <Compile Include="Models\Categoria.cs" />
     <Compile Include="Models\Marcas.cs" />
     <Compile Include="Models\Tipos.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -184,11 +187,12 @@
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Tipos\Tipos.cshtml" />
+    <Content Include="Views\Marcas\Marcas.cshtml" />
+    <Content Include="Views\Categoria\Categoria.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\Marcas\" />
-    <Folder Include="Views\Tipos\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />

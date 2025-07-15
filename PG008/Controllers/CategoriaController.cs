@@ -8,58 +8,52 @@ using PG008.Models;
 
 namespace PG008.Controllers
 {
-    public class TiposController : Controller
+    public class CategoriaController : Controller
     {
-        // GET: Tipos
-        public ActionResult Tipos()
+        // GET: Categoria
+        public ActionResult Categoria()
         {
-            //if (Session["Usuario"] == null)
-                //return RedirectToAction("Login", "Acceder");
-
             return View();
         }
         [HttpGet]
-        public JsonResult consultaTipos()
+        public JsonResult consultaCategoria()
         {
-            List<Tipos> oLista = new List<Tipos>();
+            List<Categoria> oLista = new List<Categoria>();
 
-            oLista = TiposMetodos.Instancia.Listar();
+            oLista = CategoriaMetodos.Instancia.Listar();
 
             return Json(oLista);
         }
-
         [HttpPost]
-        public JsonResult InsertarTipos(Tipos oCat)
+        public JsonResult InsertarCategoria(Categoria oCat)
         {
             bool repuesta = false;
 
-            repuesta = (oCat.IdTipos == 0) ? TiposMetodos.Instancia.Registrar(oCat) : TiposMetodos.Instancia.Modificar(oCat);
+            repuesta = (oCat.idCategoria == 0) ? CategoriaMetodos.Instancia.Registrar(oCat) : CategoriaMetodos.Instancia.Modificar(oCat);
 
             return Json(new { resultado = repuesta }, JsonRequestBehavior.AllowGet);
         }
         [HttpPost]
-        public JsonResult ModificarTipos(Tipos oCat)
+        public JsonResult ModificarCategoria(Categoria oCat)
         {
             bool respuesta = false;
 
-            if (oCat.IdTipos > 0)
+            if (oCat.idCategoria > 0)
             {
-                respuesta = TiposMetodos.Instancia.Modificar(oCat);
+                respuesta = CategoriaMetodos.Instancia.Modificar(oCat);
             }
 
             return Json(new { resultado = respuesta }, JsonRequestBehavior.AllowGet);
         }
-
         [HttpPost]
-        public JsonResult BorrarTipos(int id)
+        public JsonResult BorrarCategoria(int id)
         {
             bool Respuesta = false;
 
-            Respuesta = TiposMetodos.Instancia.Eliminar(id);
+            Respuesta = CategoriaMetodos.Instancia.Eliminar(id);
 
             return Json(new { resultado = Respuesta }, JsonRequestBehavior.AllowGet);
         }
-
-
+        
     }
 }

@@ -13,5 +13,7 @@ namespace PG008.Models
         public bool Estatus {  get; set; }
 
         public string ImagenBase64 { get; set; }
+
+        //AAAAAAAA
     }
 }
